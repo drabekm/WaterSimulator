@@ -6,7 +6,7 @@ using System.Text;
 
 namespace WaterSimulation
 {
-    internal class Water : Block
+    internal class Water : Tile
     {
         public float WaterAmount { get; set; }
         public new static Texture2D Sprite { get; set; }
@@ -19,12 +19,12 @@ namespace WaterSimulation
             this.WaterAmount = 100;
             base.Size = 32;
 
-            blockType = BlockType.Water;
+            tilekType = BlockType.Water;
         }
 
         public Water(int x, int y, float waterAmount) : base(x, y)
         {
-            blockType = BlockType.Water;
+            tilekType = BlockType.Water;
             base.Size = 32;
 
             if (waterAmount > 100)
@@ -61,24 +61,24 @@ namespace WaterSimulation
             return this.WaterAmount <= 0;
         }
 
-        public Vector2 GetTopPosition()
+        public Point GetTopPosition()
         {
-            return new Vector2(X, Y - Size);
+            return new Point(X, Y - Size);
         }
 
-        public Vector2 GetBelowPosition()
+        public Point GetBelowPosition()
         {
-            return new Vector2(X, Y + Size);
+            return new Point(X, Y + Size);
         }
 
-        public Vector2 GetRightHandPosition()
+        public Point GetRightHandPosition()
         {
-            return new Vector2(X + Size, Y);
+            return new Point(X + Size, Y);
         }
 
-        public Vector2 GetLeftHandPosition()
+        public Point GetLeftHandPosition()
         {
-            return new Vector2(X - Size, Y);
+            return new Point(X - Size, Y);
         }
     }
 }
