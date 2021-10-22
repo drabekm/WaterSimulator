@@ -14,6 +14,7 @@ namespace WaterSimulation
         public Tile(int x, int y) : base(x, y)
         {
             blockType = BlockType.Tile;
+            base.Size = 32;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

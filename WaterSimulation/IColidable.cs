@@ -8,6 +8,6 @@ namespace WaterSimulation
     {
         int X { get; set; }
         int Y { get; set; }
-        const int Size = 32;
+        int Size { get; set; }
     }
 }

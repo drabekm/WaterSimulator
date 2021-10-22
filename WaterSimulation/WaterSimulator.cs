@@ -11,7 +11,7 @@ namespace WaterSimulation
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Dictionary<Vector2, Block> elements;
+        private List<Block> elements;
 
         public WaterSimulator()
         {
@@ -40,31 +40,20 @@ namespace WaterSimulation
                 Exit();
 
             //Move water
-            List<Water> waterBlocks = elements.Values.Where(x => x is Water).Select(x => x as Water).ToList();
+            List<Water> waterBlocks = elements.Where(x => x is Water).Select(x => x as Water).ToList();
             waterBlocks.OrderBy(x => x.Y);
 
             foreach(var water in waterBlocks)
             {
-                var bellowPosition = new Vector2(water.X, water.Y + Block.Size);
-
-                if (!elements.ContainsKey(bellowPosition))
-                {
-                    var newWater = new Water(water.X, water.Y + Block.Size, water.GiveWater());
-                    elements.Add(newWater.Position, newWater);
-                }
-                else if (elements[bellowPosition] is Water)
-                {
-                    var otherWater = elements[bellowPosition] as Water;
-                    otherWater.WaterAmount += water.GiveWater();
-                }
+                //if (water.GetBelowPosition())
             }
 
-            waterBlocks = elements.Values.Where(x => x is Water).Select(x => x as Water).ToList();
+            waterBlocks = elements.Where(x => x is Water).Select(x => x as Water).ToList();
             foreach (var water in waterBlocks)
             {
                 if (water.LostTooMuchWater())
                 {
-                    elements.Remove(water.Position);
+                    elements.Remove(water);
                 }
             }
 
@@ -79,7 +68,7 @@ namespace WaterSimulation
             //Render tiles
             _spriteBatch.Begin();
 
-            foreach(var element in elements.Values)
+            foreach(var element in elements)
             {
                 element.Draw(_spriteBatch);
             }
@@ -91,26 +80,26 @@ namespace WaterSimulation
 
         private void InitializeElements()
         {
-            elements = new Dictionary<Vector2, Block>();
+            elements = new List<Block>();
             InitializeTiles();
             InitializeWater();
         }
 
         private void InitializeTiles()
         {
-            elements.Add(new Vector2(64, 96), new Tile(64, 96));
-            elements.Add(new Vector2(64, 128), new Tile(64, 128));
-            elements.Add(new Vector2(64, 160), new Tile(64, 160));
-            elements.Add(new Vector2(96, 160), new Tile(96, 160));
-            elements.Add(new Vector2(128, 160), new Tile(128, 160));
-            elements.Add(new Vector2(160, 160), new Tile(160, 160));
-            elements.Add(new Vector2(160, 128), new Tile(160, 128));
-            elements.Add(new Vector2(160, 96), new Tile(160, 96));
+            elements.Add(new Tile(64, 96));
+            elements.Add(new Tile(64, 128));
+            elements.Add(new Tile(64, 160));
+            elements.Add(new Tile(96, 160));
+            elements.Add(new Tile(128, 160));
+            elements.Add(new Tile(160, 160));
+            elements.Add(new Tile(160, 128));
+            elements.Add(new Tile(160, 96));
         }
 
         private void InitializeWater()
         {
-            elements.Add(new Vector2(128, 96), new Water(128, 96));
+            elements.Add(new Water(128, 96));
         }
     }
 }

@@ -10,12 +10,13 @@ namespace WaterSimulation
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public int Size { get; set; }
+
         public Vector2 Position { get; set; }
 
         public BlockType blockType { get; set; }
 
-        public static Texture2D Sprite { get; set; }
-        public const int Size = 32;
+        public static Texture2D Sprite { get; set; }        
 
         public Block(int x, int y)
         {
@@ -30,9 +31,5 @@ namespace WaterSimulation
             throw new NotImplementedException("Musíš si udělat vlastní lol");
         }
 
-        public Vector2 GetPositionBelow()
-        {
-            return new Vector2(Position.X, Position.Y + Size);
-        }
     }
 }
