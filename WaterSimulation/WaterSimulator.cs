@@ -11,7 +11,7 @@ namespace WaterSimulation
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private List<Block> elements;
+        private List<Tile> elements;
 
         public WaterSimulator()
         {
@@ -31,7 +31,7 @@ namespace WaterSimulation
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Water.Sprite = this.Content.Load<Texture2D>("Sprites/water");
-            Tile.Sprite = this.Content.Load<Texture2D>("Sprites/tile");            
+            Block.Sprite = this.Content.Load<Texture2D>("Sprites/tile");            
         }
 
         protected override void Update(GameTime gameTime)
@@ -39,24 +39,7 @@ namespace WaterSimulation
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            //Move water
-            List<Water> waterBlocks = elements.Where(x => x is Water).Select(x => x as Water).ToList();
-            waterBlocks.OrderBy(x => x.Y);
-
-            foreach(var water in waterBlocks)
-            {
-                //if (water.GetBelowPosition())
-            }
-
-            waterBlocks = elements.Where(x => x is Water).Select(x => x as Water).ToList();
-            foreach (var water in waterBlocks)
-            {
-                if (water.LostTooMuchWater())
-                {
-                    elements.Remove(water);
-                }
-            }
-
+            WaterHandler.MoveWater(elements);
 
             base.Update(gameTime);
         }
@@ -80,26 +63,26 @@ namespace WaterSimulation
 
         private void InitializeElements()
         {
-            elements = new List<Block>();
+            elements = new List<Tile>();
             InitializeTiles();
             InitializeWater();
         }
 
         private void InitializeTiles()
         {
-            elements.Add(new Tile(64, 96));
-            elements.Add(new Tile(64, 128));
-            elements.Add(new Tile(64, 160));
-            elements.Add(new Tile(96, 160));
-            elements.Add(new Tile(128, 160));
-            elements.Add(new Tile(160, 160));
-            elements.Add(new Tile(160, 128));
-            elements.Add(new Tile(160, 96));
+            elements.Add(new Block(64, 96));
+            elements.Add(new Block(64, 128));
+            elements.Add(new Block(64, 160));
+            elements.Add(new Block(96, 160));
+            elements.Add(new Block(128, 160));
+            elements.Add(new Block(160, 160));
+            elements.Add(new Block(160, 128));
+            elements.Add(new Block(160, 96));
         }
 
         private void InitializeWater()
         {
-            elements.Add(new Water(128, 96));
+            elements.Add(new Water(128, 64));
         }
     }
 }

@@ -7,12 +7,14 @@ using System.Text;
 namespace WaterSimulation
 {
     internal class Water : Tile
-    {
-        public float WaterAmount { get; set; }
+    {        
         public new static Texture2D Sprite { get; set; }
 
         private const int maxWaterAmount = 100;
         public const float transferSpeed = 1f;
+
+        public float WaterAmount { get; set; }
+        public bool HasWaterAboveIt { get; set; }
 
         public Water(int x, int y) : base(x, y)
         {
@@ -39,15 +41,32 @@ namespace WaterSimulation
 
         public override void Draw(SpriteBatch spritebacth)
         {
-            double scale = WaterAmount / maxWaterAmount;
+            double scale = 1;
+            if (!HasWaterAboveIt)
+            {
+                scale = WaterAmount / maxWaterAmount;
+            }
             int height = (int)(Size * scale);
 
             spritebacth.Draw(Sprite, new Rectangle(X, Y + (Size - height), Size, height), Color.White);
         }
 
-        public void GetWater(float givenWater)
-        {            
-            this.WaterAmount = Math.Min(WaterAmount + givenWater, 100);
+        public void GetWater(Water water, bool waterIsFlowingDown)
+        {
+
+            if (!waterIsFlowingDown)
+            {
+                //Ve vodě kam se vlévá musí být méně vody než ze které se vylévá
+                if (this.WaterAmount < water.WaterAmount)
+                {
+                    this.WaterAmount = Math.Min(WaterAmount + water.GiveWater(), 100);
+                }
+            }
+            else
+            {
+                //Podmínka z kódu nahoře neplatí, pokud voda teče dolů
+                this.WaterAmount = Math.Min(WaterAmount + water.GiveWater(), 100);                
+            }
         }
 
         public float GiveWater()
