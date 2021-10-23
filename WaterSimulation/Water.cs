@@ -6,7 +6,7 @@ using System.Text;
 
 namespace WaterSimulation
 {
-    internal class Water : Tile
+    internal class Water : Block
     {        
         public new static Texture2D Sprite { get; set; }
 
@@ -21,12 +21,12 @@ namespace WaterSimulation
             this.WaterAmount = 100;
             base.Size = 32;
 
-            tilekType = BlockType.Water;
+            tileType = BlockType.Water;
         }
 
         public Water(int x, int y, float waterAmount) : base(x, y)
         {
-            tilekType = BlockType.Water;
+            tileType = BlockType.Water;
             base.Size = 32;
 
             if (waterAmount > 100)

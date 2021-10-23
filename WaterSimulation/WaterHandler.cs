@@ -8,7 +8,7 @@ namespace WaterSimulation
 {
     static class WaterHandler
     {
-        public static void MoveWater(List<Tile> elements)
+        public static void MoveWater(List<Block> elements)
         {
             var waterBlocks = OrderElementsByHeightDESC(GetWaterFromElements(elements));
 
@@ -38,7 +38,7 @@ namespace WaterSimulation
             elements.RemoveAll(x => markedForDeletion.Contains(x));
         }
 
-        private static List<Water> GetWaterFromElements(List<Tile> elements)
+        private static List<Water> GetWaterFromElements(List<Block> elements)
         {
             return elements.Where(x => x is Water).Select(x => x as Water).ToList();            
         }
@@ -48,7 +48,7 @@ namespace WaterSimulation
             return waterBlocks.OrderByDescending(x => x.Y).ToList();
         }
 
-        private static Tile HandleColision(Tile colider, Water water, Point colisionPosition, List<Tile> elements, bool waterIsOnFloor)
+        private static Block HandleColision(Block colider, Water water, Point colisionPosition, List<Block> elements, bool waterIsOnFloor)
         {
             //Při kontrole horních bloků se dějí bloky kódu, které se jindy nedějí
             bool checkingUpperPosition = water.Position.Y > colisionPosition.Y;
@@ -84,7 +84,7 @@ namespace WaterSimulation
                 }
             }
 
-            if (colider is Block)
+            if (colider is Tile)
             {
                 if (checkingUpperPosition)
                 {
@@ -96,9 +96,9 @@ namespace WaterSimulation
             return colider;
         }
 
-        private static bool WaterIsOnFloor(Tile colider)
+        private static bool WaterIsOnFloor(Block colider)
         {
-            if (colider is Block)
+            if (colider is Tile)
             {
                 return true;
             }
@@ -112,7 +112,7 @@ namespace WaterSimulation
             return false;
         }
 
-        private static Tile CheckForColision(Point colisionPosition, List<Tile> elements)
+        private static Block CheckForColision(Point colisionPosition, List<Block> elements)
         {            
             foreach(var element in elements)
             {
@@ -126,9 +126,9 @@ namespace WaterSimulation
             return null;
         }
 
-        private static List<Tile> CheckForEmptyWaterBlocks(List<Water> waterBlocks)
+        private static List<Block> CheckForEmptyWaterBlocks(List<Water> waterBlocks)
         {
-            List<Tile> markedForDeletion = new List<Tile>();
+            List<Block> markedForDeletion = new List<Block>();
             foreach(var water in waterBlocks)
             {
                 if (water.LostTooMuchWater())

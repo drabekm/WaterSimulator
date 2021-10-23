@@ -6,20 +6,30 @@ using System.Text;
 
 namespace WaterSimulation
 {
-    internal class Block : Tile
+    abstract class Block : IColidable, IRenderable
     {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Size { get; set; }
 
-        public new static Texture2D Sprite { get; set; }
+        public Point Position { get; set; }
 
-        public Block(int x, int y) : base(x, y)
+        public BlockType tileType { get; set; }
+
+        public static Texture2D Sprite { get; set; }        
+
+        public Block(int x, int y)
         {
-            tilekType = BlockType.Tile;
-            base.Size = 32;
+            X = x;
+            Y = y;
+
+            Position = new Point(x, y);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Sprite, new Rectangle(X, Y, Size, Size), Color.White);
+            throw new NotImplementedException("Musíš si udělat vlastní lol");
         }
+
     }
 }
