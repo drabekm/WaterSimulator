@@ -13,17 +13,20 @@ namespace WaterSimulation
         public int Size { get; set; }
 
         public Point Position { get; set; }
+        public Rectangle Rectangle { get; set; }
 
         public BlockType tileType { get; set; }
 
         public static Texture2D Sprite { get; set; }        
 
-        public Block(int x, int y)
+        public Block(int x, int y, int size)
         {
             X = x;
             Y = y;
+            Size = size;
 
             Position = new Point(x, y);
+            Rectangle = new Rectangle(Position, new Point(Size, Size)); 
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

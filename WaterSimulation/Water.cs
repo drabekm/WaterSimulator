@@ -12,22 +12,21 @@ namespace WaterSimulation
 
         private const int maxWaterAmount = 100;
         public const float transferSpeed = 1f;
+        public const int WaterSize = 16;
 
         public float WaterAmount { get; set; }
         public bool HasWaterAboveIt { get; set; }
 
-        public Water(int x, int y) : base(x, y)
+        public Water(int x, int y) : base(x, y, WaterSize)
         {
             this.WaterAmount = 100;
-            base.Size = 32;
 
             tileType = BlockType.Water;
         }
 
-        public Water(int x, int y, float waterAmount) : base(x, y)
+        public Water(int x, int y, float waterAmount) : base(x, y, WaterSize)
         {
             tileType = BlockType.Water;
-            base.Size = 32;
 
             if (waterAmount > 100)
             {
@@ -49,6 +48,11 @@ namespace WaterSimulation
             int height = (int)(Size * scale);
 
             spritebacth.Draw(Sprite, new Rectangle(X, Y + (Size - height), Size, height), Color.White);
+        }
+
+        public bool CanAcceptWater()
+        {
+            return this.WaterAmount < maxWaterAmount;
         }
 
         public void GetWater(Water water, bool waterIsFlowingDown)

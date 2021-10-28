@@ -11,7 +11,8 @@ namespace WaterSimulation
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private List<Block> elements;
+        
+        private BlockHandler _waterHandler;
 
         public WaterSimulator()
         {
@@ -23,8 +24,9 @@ namespace WaterSimulation
         protected override void Initialize()
         {            
             base.Initialize();
-
-            InitializeElements();
+            
+            var elements = InitializeElements();
+            _waterHandler = new BlockHandler(elements);
         }
 
         protected override void LoadContent()
@@ -39,11 +41,16 @@ namespace WaterSimulation
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-
-            MouseInputHandler.HandleClick(Mouse.GetState(), elements);
-            WaterHandler.MoveWater(elements);
+            HandleInputs(Mouse.GetState(), Keyboard.GetState());
+            
+            _waterHandler.MoveWater();
 
             base.Update(gameTime);
+        }
+
+        private void HandleInputs(MouseState mouseState, KeyboardState keyboardState)
+        {
+            _waterHandler.HandleInput(mouseState, keyboardState);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -53,24 +60,23 @@ namespace WaterSimulation
             //Render tiles
             _spriteBatch.Begin();
 
-            foreach(var element in elements)
-            {
-                element.Draw(_spriteBatch);
-            }
+            _waterHandler.Draw(_spriteBatch);
 
             _spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        private void InitializeElements()
+        private new List<Block> InitializeElements()
         {
-            elements = new List<Block>();
-            InitializeTiles();
-            InitializeWater();
+            var elements = new List<Block>();
+            InitializeTiles(elements);
+            InitializeWater(elements);
+
+            return elements;
         }
 
-        private void InitializeTiles()
+        private void InitializeTiles(List<Block> elements)
         {
             elements.Add(new Tile(64, 96));
             elements.Add(new Tile(64, 128));
@@ -93,9 +99,13 @@ namespace WaterSimulation
              elements.Add(new Tile(320, 96));*/
         }
 
-        private void InitializeWater()
+        private void InitializeWater(List<Block> elements)
         {
-            elements.Add(new Water(128, 64));
+            elements.Add(new Water(192, 272));
+            elements.Add(new Water(208, 240));
+            elements.Add(new Water(192, 224));
+            // elements.Add(new Water(128, 64));
+            // elements.Add(new Water(144, 64));
         }
     }
 }
