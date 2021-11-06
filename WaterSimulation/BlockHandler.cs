@@ -22,7 +22,7 @@ namespace WaterSimulation
         }
 
 
-        public bool HandleInput(MouseState mouseState, KeyboardState keyboardState)
+        public void HandleInput(MouseState mouseState, KeyboardState keyboardState)
         {
             if (keyboardState.IsKeyDown(Keys.P))
             {
@@ -86,7 +86,7 @@ namespace WaterSimulation
                             var newTileXA = (mouseState.Position.X / Water.WaterSize) * Water.WaterSize;
                             var newTileYA = (mouseState.Position.Y / Water.WaterSize) * Water.WaterSize;
                             Elements.Add(new Water(newTileXA, newTileYA));
-                            return true;
+                            break;
                     }
                 }
 
@@ -95,8 +95,6 @@ namespace WaterSimulation
             {
                 MouseStillDownAfterTileCreated = false;
             }
-
-            return false;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -141,12 +139,6 @@ namespace WaterSimulation
 
             var markedForDeletion = CheckForEmptyWaterBlocks(waterBlocks); 
             Elements.RemoveAll(x => markedForDeletion.Contains(x));
-
-            var totalWaterAmount = GetWaterFromElements(Elements).Sum(x => x.WaterAmount);
-            if (GetWaterFromElements(Elements).Count() > 0 && totalWaterAmount != 100)
-            {
-                int asdasd = 23;
-            }
         }
 
         private bool IsWrongWaterAmount(List<Water> waterBlocks)
