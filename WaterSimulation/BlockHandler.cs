@@ -15,14 +15,14 @@ namespace WaterSimulation
         public List<Block> Elements { get; set; }
 
         private BlockInputType _blockInputType { get; set; }
-
+        private bool MouseStillDownAfterTileCreated = false;
         public BlockHandler(List<Block> elements)
         {
             this.Elements = elements;
         }
 
 
-        public void HandleInput(MouseState mouseState, KeyboardState keyboardState)
+        public bool HandleInput(MouseState mouseState, KeyboardState keyboardState)
         {
             if (keyboardState.IsKeyDown(Keys.P))
             {
@@ -43,50 +43,60 @@ namespace WaterSimulation
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                switch(_blockInputType)
+                if (!MouseStillDownAfterTileCreated)
                 {
-                    case BlockInputType.Erase:
-                        List<Block> tilesToDelete = new List<Block>();
-                        foreach (var element in Elements.Where(x => x.tileType == BlockType.Tile))
-                        {
-                            if (element.Rectangle.Contains(mouseState.Position))
+                    MouseStillDownAfterTileCreated = true;
+                    switch (_blockInputType)
+                    {
+                        case BlockInputType.Erase:
+                            List<Block> tilesToDelete = new List<Block>();
+                            foreach (var element in Elements.Where(x => x.tileType == BlockType.Tile))
                             {
-                                tilesToDelete.Add(element);
+                                if (element.Rectangle.Contains(mouseState.Position))
+                                {
+                                    tilesToDelete.Add(element);
+                                }
                             }
-                        }
-                        Elements.RemoveAll(x => tilesToDelete.Contains(x));
-                        break;
+                            Elements.RemoveAll(x => tilesToDelete.Contains(x));
+                            break;
 
-                    case BlockInputType.Tile:
-                        foreach (var element in Elements.Where(x => x.tileType == BlockType.Tile))
-                        {
-                            if (element.Rectangle.Contains(mouseState.Position))
+                        case BlockInputType.Tile:
+                            foreach (var element in Elements.Where(x => x.tileType == BlockType.Tile))
                             {
-                                break;
+                                if (element.Rectangle.Contains(mouseState.Position))
+                                {
+                                    break;
+                                }
                             }
-                        }
 
-                        var newTileX = (mouseState.Position.X / Tile.TileSize) * Tile.TileSize;
-                        var newTileY = (mouseState.Position.Y / Tile.TileSize) * Tile.TileSize;
-                        Elements.Add(new Tile(newTileX, newTileY));
-                        break;
+                            var newTileX = (mouseState.Position.X / Tile.TileSize) * Tile.TileSize;
+                            var newTileY = (mouseState.Position.Y / Tile.TileSize) * Tile.TileSize;
+                            Elements.Add(new Tile(newTileX, newTileY));
+                            break;
 
-                    case BlockInputType.Water:
-                        foreach (var element in Elements.Where(x => x.tileType == BlockType.Tile))
-                        {
-                            if (element.Rectangle.Contains(mouseState.Position))
+                        case BlockInputType.Water:
+                            foreach (var element in Elements.Where(x => x.tileType == BlockType.Tile))
                             {
-                                break;
+                                if (element.Rectangle.Contains(mouseState.Position))
+                                {
+                                    break;
+                                }
                             }
-                        }
 
-                        var newTileXA = (mouseState.Position.X / Water.WaterSize) * Water.WaterSize;
-                        var newTileYA = (mouseState.Position.Y / Water.WaterSize) * Water.WaterSize;
-                        Elements.Add(new Water(newTileXA, newTileYA));
-                        break;
+                            var newTileXA = (mouseState.Position.X / Water.WaterSize) * Water.WaterSize;
+                            var newTileYA = (mouseState.Position.Y / Water.WaterSize) * Water.WaterSize;
+                            Elements.Add(new Water(newTileXA, newTileYA));
+                            return true;
+                    }
                 }
-               
+
             }
+            else
+            {
+                MouseStillDownAfterTileCreated = false;
+            }
+
+            return false;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -104,9 +114,10 @@ namespace WaterSimulation
                 return;
             }
 
-            var waterBlocks = OrderElementsByHeightDESC(GetWaterFromElements(Elements));
+            //var waterBlocks = OrderElementsByHeightDESC(GetWaterFromElements(Elements));
+            var waterBlocks = OrderElementsByHeightASC(GetWaterFromElements(Elements));
 
-            foreach(var water in waterBlocks)
+            foreach (var water in waterBlocks)
             {
                 var colisionPosition = water.GetBelowPosition();
                 var colider = CheckForColision(colisionPosition, Elements);
@@ -128,8 +139,19 @@ namespace WaterSimulation
                 HandleColision(colider, water, colisionPosition, Elements, waterIsOnFloor);
             }
 
-            var markedForDeletion = CheckForEmptyWaterBlocks(waterBlocks);
+            var markedForDeletion = CheckForEmptyWaterBlocks(waterBlocks); 
             Elements.RemoveAll(x => markedForDeletion.Contains(x));
+
+            var totalWaterAmount = GetWaterFromElements(Elements).Sum(x => x.WaterAmount);
+            if (GetWaterFromElements(Elements).Count() > 0 && totalWaterAmount != 100)
+            {
+                int asdasd = 23;
+            }
+        }
+
+        private bool IsWrongWaterAmount(List<Water> waterBlocks)
+        {
+            return waterBlocks.Sum(x => x.WaterAmount) != 100;
         }
 
         private List<Water> GetWaterFromElements(List<Block> elements)
@@ -140,6 +162,11 @@ namespace WaterSimulation
         private List<Water> OrderElementsByHeightDESC(List<Water> waterBlocks)
         {
             return waterBlocks.OrderByDescending(x => x.Y).ToList();
+        }
+
+        private List<Water> OrderElementsByHeightASC(List<Water> waterBlocks)
+        {
+            return waterBlocks.OrderBy(x => x.Y).ToList();
         }
 
         private Block HandleColision(Block colider, Water water, Point colisionPosition, List<Block> elements, bool waterIsOnFloor)
@@ -153,8 +180,12 @@ namespace WaterSimulation
                 //Voda se může roztéct na prázdné místo pokud je na pevné podlaze, nebo pokud pod ní nic není
                 if (!checkingUpperPosition && (waterIsOnFloor || checkingBelowPosition))
                 {
-                    var newWater = new Water(colisionPosition.X, colisionPosition.Y, water.GiveWater());
-                    elements.Add(newWater);
+                    if (water.WaterAmount > 5)
+                    {
+                        var newWater = new Water(colisionPosition.X, colisionPosition.Y, water.GiveWater());
+                        elements.Add(newWater);
+                    }
+                    
                 }
 
                 if (checkingUpperPosition)

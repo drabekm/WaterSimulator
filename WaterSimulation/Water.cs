@@ -61,7 +61,7 @@ namespace WaterSimulation
             if (!waterIsFlowingDown)
             {
                 //Ve vodě kam se vlévá musí být méně vody než ze které se vylévá
-                if (this.WaterAmount < water.WaterAmount)
+                if (this.WaterAmount < water.WaterAmount && (water.WaterAmount > 5))
                 {
                     this.WaterAmount = Math.Min(WaterAmount + water.GiveWater(), 100);
                 }
@@ -77,6 +77,13 @@ namespace WaterSimulation
         {
             this.WaterAmount -= transferSpeed;
             return transferSpeed;
+        }
+
+        public float GiveAllWater()
+        {
+            var tempWaterAmount = this.WaterAmount;
+            this.WaterAmount = 0;
+            return tempWaterAmount;
         }
 
         public bool LostTooMuchWater()
